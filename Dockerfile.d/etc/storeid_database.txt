@@ -1,0 +1,3 @@
+^https?:\/\/docker(.*)\/registry\/v2\/blobs\/sha256\/([^\?]*).*$	http://dockerhub.squidinternal/blobs/sha256/$2
+^https?:\/\/(.*)registry-k8s-io(.*)\/containers\/images\/sha256\:([^\?]*).*$	http://registry-k8s-io.squidinternal/images/sha256/$3
+^https?:\/\/gcr\.io\/artifacts(.*)namespaces\/([^\/]+)\/(.*)\/downloads\/(.*)$	http://gcr-io.squidinternal/$2/$4
