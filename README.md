@@ -12,17 +12,18 @@ It relies on Squid [SslBump Peek and Splice](https://wiki.squid-cache.org/Featur
 > Operations are organized as abstract make recipes, just run `make` to see the list of available targets
 
 ## Requirements
-- Docker
-- Docker Compose
+- Docker or Nerdctl or Podman
+- Docker Compose or equivalent
 - OpenSSL for [generating a self-signed CA certificate](#generate-a-self-signed-ca-certificate)
 - Make
 
 ## Generate a self-signed CA certificate
 
+> [!NOTE]
+>The bellow example demonstrates how to generate a self-signed ECDSA CA certificate with openssl
+
 <details>
 <summary>Generate a self-signed CA certificate</summary>
-
->This example demonstrates how to generate a self-signed ECDSA CA certificate with openssl
 
 Create the private key
 
@@ -74,6 +75,9 @@ cat CA.key CA.crt > CA-key-and-cert.pem
 
 ### Trust the self-signed CA certificate
 
+> [!IMPORTANT]
+>You need to trust the self-signed CA certificate in order to be able to use the proxy
+
 <details>
 <summary>Debian / Ubuntu</summary>
 
@@ -104,25 +108,64 @@ For example, to set the path to the self-signed CA certificate and key in pem fo
 make TLS_CA_PEM=/path/to/CA-key-and-cert.pem
 ```
 
+> [!TIP]
+> You can execute `make clean` to remove the `.env` file
+
 ## Build image
 
 Run `make build` to build the Docker image
 
-## Configure Docker to use the Proxy
+> [!NOTE]
+> Build takes about 5 minutes to compile squid depending on your system compute capabilities
+
+## Configure your Container Runtime
+
+<details>
+<summary>Docker</summary>
 
 Create the file `/etc/systemd/system/docker.service.d/http-proxy.conf` with the following content
 
 ```shell
+mkdir -p /etc/systemd/system/docker.service.d
+
+cat <<EOF | sudo tee /etc/systemd/system/docker.service.d/http-proxy.conf
 [Service]
 Environment="HTTPS_PROXY=http://127.0.0.1:3128/"
-```
+EOF
 
-Then run
-
-```shell
 sudo systemctl daemon-reload
 sudo systemctl restart docker.service
 ```
+
+</details>
+
+<details>
+<summary>Nerdctl / Containerd</summary>
+
+Create the file `/etc/systemd/system/containerd.service.d/http-proxy.conf` with the following content
+
+```shell
+mkdir -p /etc/systemd/system/containerd.service.d
+
+cat <<EOF | sudo tee /etc/systemd/system/containerd.service.d/http-proxy.conf
+[Service]
+Environment="HTTPS_PROXY=http://127.0.0.1:3128/"
+EOF
+
+sudo systemctl daemon-reload
+sudo systemctl restart containerd.service
+```
+
+</details>
+
+<details>
+<summary>Podman</summary>
+
+```shell
+export "HTTPS_PROXY=http://127.0.0.1:3128/"
+```
+
+</details>
 
 ## Run
 
