@@ -2,19 +2,70 @@
 
 > A Cache Proxy to any Docker registries based on [Squid](https://www.squid-cache.org/)
 
-:construction: Work in Progress
-
 ## About
 
-This project aims to cover the need of a cache reverse proxy to prevent pull rate limiting and speed up the kick-off a local Kubernetes cluster with Kind or any other "In Docker" equivalents
+This project provides a cache reverse proxy to prevent pull rate limiting and speed up the kick-off a local Kubernetes cluster such as [Kind](https://kind.sigs.k8s.io/), [VIND](https://github.com/loft-sh/vind) or any other "In Docker" equivalents
 
-It relies on `make` recipes to abstract commands and simplify operations, just run `make` to see the list of available targets
+It relies on Squid [SslPeekAndSplice](https://wiki.squid-cache.org/Features/SslPeekAndSplice) feature to cache docker images
+
+> Operations are organized as abstract make recipes, just run `make` to see the list of available targets
 
 ## Requirements
 - Docker
 - Docker Compose
-- OpenSSL for generating a self-signed CA certificate and Key
+- OpenSSL for [generating a self-signed CA certificate](#generate-a-self-signed-ca-certificate-with-openssl)
 - Make
+
+## Generate a self-signed CA certificate with openssl
+
+This example demonstrates how to generate a self-signed ECDSA CA certificate with openssl
+
+Create the private key
+
+```shell
+openssl ecparam -genkey -name secp384r1 -out CA.key
+```
+
+Create the certificate configuration file
+
+```shell
+cat <<-EOF > CA.cnf
+[ req ]
+default_bits       = 4096
+prompt             = no
+default_md         = SHA384
+distinguished_name = dn
+[ dn ]
+countryName  = FR
+stateOrProvinceName = Paris
+localityName  = Paris
+organizationName  = Example
+organizationalUnitName = IT
+commonName = Example Certification Authority
+[ v3_req ]
+basicConstraints = critical,CA:TRUE
+keyUsage = critical, digitalSignature, cRLSign, keyCertSign
+subjectKeyIdentifier = hash
+EOF
+```
+
+Create the CA certificate signing request
+
+```shell
+openssl req -new -SHA384 -nodes -out CA.csr -key CA.key -config CA.cnf
+```
+
+Create the CA certificate
+
+```shell
+openssl x509 -req -SHA384 -days 3650 -in CA.csr -signkey CA.key -extfile CA.cnf -extensions v3_req -out CA.crt
+```
+
+Finally concat the CA key and cert for later use with squid
+
+```shell
+cat CA.key CA.crt > CA-key-and-cert.pem
+```
 
 ## Usage
 
@@ -23,7 +74,7 @@ Run `make` to generate the `.env` file, you can override any of the below listed
 For example, to set the path to the self-signed CA certificate and key in pem format
 
 ```shell
-make TLS_CA_CERT_AND_KEY=/path/to/Ca-cert-and-key.pem
+make TLS_CA_CERT_AND_KEY=/path/to/CA-key-and-cert.pem
 ```
 
 ## Build image
@@ -37,7 +88,6 @@ Create the file `/etc/systemd/system/docker.service.d/http-proxy.conf` with the 
 ```shell
 [Service]
 Environment="HTTPS_PROXY=http://127.0.0.1:3128/"
-Environment="NO_PROXY=localhost,127.0.0.0/8,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"
 ```
 
 Then run
