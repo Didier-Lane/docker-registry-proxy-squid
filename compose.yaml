@@ -16,7 +16,7 @@ services:
         target: /var/cache/squid
       - ./Dockerfile.d/etc/squid.conf:/etc/squid/squid.conf:ro,z
       - ./Dockerfile.d/etc/storeid_database.txt:/etc/squid/storeid_database.txt:ro,z
-      - "${TLS_CA_CERT_AND_KEY}:/etc/squid/ssl/CA-key-and-crt.pem:ro,z"
+      - "${TLS_CA_PEM}:/etc/squid/ssl/CA.pem:ro,z"
     ports:
       - 3128:3128
     restart: "${RESTART_POLICY:-unless-stopped}"

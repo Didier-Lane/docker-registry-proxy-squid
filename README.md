@@ -6,19 +6,23 @@
 
 This project provides a cache reverse proxy to prevent pull rate limiting and speed up the kick-off a local Kubernetes cluster such as [Kind](https://kind.sigs.k8s.io/), [VIND](https://github.com/loft-sh/vind) or any other "In Docker" equivalents
 
-It relies on Squid [SslPeekAndSplice](https://wiki.squid-cache.org/Features/SslPeekAndSplice) feature to cache docker images
+It relies on Squid [SslBump Peek and Splice](https://wiki.squid-cache.org/Features/SslPeekAndSplice) feature to cache docker images
 
+> [!TIP]
 > Operations are organized as abstract make recipes, just run `make` to see the list of available targets
 
 ## Requirements
 - Docker
 - Docker Compose
-- OpenSSL for [generating a self-signed CA certificate](#generate-a-self-signed-ca-certificate-with-openssl)
+- OpenSSL for [generating a self-signed CA certificate](#generate-a-self-signed-ca-certificate)
 - Make
 
-## Generate a self-signed CA certificate with openssl
+## Generate a self-signed CA certificate
 
-This example demonstrates how to generate a self-signed ECDSA CA certificate with openssl
+<details>
+<summary>Generate a self-signed CA certificate</summary>
+
+>This example demonstrates how to generate a self-signed ECDSA CA certificate with openssl
 
 Create the private key
 
@@ -66,6 +70,29 @@ Finally concat the CA key and cert for later use with squid
 ```shell
 cat CA.key CA.crt > CA-key-and-cert.pem
 ```
+</details>
+
+### Trust the self-signed CA certificate
+
+<details>
+<summary>Debian / Ubuntu</summary>
+
+```shell
+sudo cp CA.crt /usr/local/share/ca-certificates
+sudo update-ca-certificates
+```
+
+</details>
+
+<details>
+<summary>Fedora / Arch</summary>
+
+```shell
+sudo trust anchor --store CA.crt
+sudo update-ca-trust
+```
+
+</details>
 
 ## Usage
 
@@ -74,7 +101,7 @@ Run `make` to generate the `.env` file, you can override any of the below listed
 For example, to set the path to the self-signed CA certificate and key in pem format
 
 ```shell
-make TLS_CA_CERT_AND_KEY=/path/to/CA-key-and-cert.pem
+make TLS_CA_PEM=/path/to/CA-key-and-cert.pem
 ```
 
 ## Build image
@@ -104,14 +131,14 @@ Run `make up` to start the Registry Proxy
 ## Environment variables
 
 | Name                  |     Description               | Default value
-|--                     |--                             |--
+|:--                    |:--                            |:--
 | VERBOSE               | Enable verbose output of make recipes | `false`
 | DOCKER                | Name of the docker cli, or equivalent (eg podman) | `docker`
 | COMPOSE_PROJECT_NAME  | Name of the Docker Compose project | `registry-proxy`
 | BUILDKIT_PROGRESS     | Sets the type of the [BuildKit progress output](https://docs.docker.com/build/building/variables/#buildkit_progress) | `auto`
 | ALPINE_VERSION        | Version of The [Alpine Image](https://hub.docker.com/_/alpine) to use for building | `3.23.3`
 | SQUID_VERSION         | [Squid Release version](https://github.com/squid-cache/squid/releases) used for building | `7_4`
-| IMAGE_REPOSITORY      | Name of the Docker image built | uses `COMPOSE_PROJECT_NAME`
+| IMAGE_REPOSITORY      | Name of the Docker image built | `registry-proxy`
 | IMAGE_TAG             | Tag of the Docker image built, defaults to the `SQUID_VERSION` with a string substitution of `_` with `.` ( eg : `7_4` to `7.4` ) | `7.4`
-| TLS_CA_CERT_AND_KEY   | Path to the self-signed CA cert and key in PEM format | null
+| TLS_CA_PEM   | Path to the self-signed CA cert and key in PEM format | null
 | RESTART_POLICY        | Defines the [restart policy](https://docs.docker.com/reference/compose-file/services/#restart) of the registry proxy container | `unless-stopped`

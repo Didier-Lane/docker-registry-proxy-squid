@@ -18,7 +18,7 @@ IMAGE_REPOSITORY		?= $(COMPOSE_PROJECT_NAME)
 IMAGE_TAG				?= $(subst _,.,$(SQUID_VERSION))
 
 # Path where the TLS CA cert and key pem file is located
-TLS_CA_CERT_AND_KEY		?= ~/.ssl/local.io/CA-key-and-crt.pem
+TLS_CA_PEM				?= ~/.ssl/local.io/CA-key-and-crt.pem
 
 # Docker container restart policy
 RESTART_POLICY			?= unless-stopped

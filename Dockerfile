@@ -60,8 +60,11 @@ WORKDIR "/tmp/squid-SQUID_${SQUID_VERSION}"
 
 # Build Squid
 RUN <<EOR
+	MACHINE=$(uname -m)
 	autoreconf --install
 	./configure \
+		--build="$MACHINE" \
+		--host="$MACHINE" \
 		--bindir=/usr/local/bin \
 		--sbindir=/usr/local/sbin \
 		--libexecdir=/usr/local/bin \
@@ -72,10 +75,12 @@ RUN <<EOR
 		--with-pidfile=/var/run/squid/squid.pid \
 		--with-openssl \
 		--with-large-files \
+		--enable-ipv6 \
 		--enable-ssl \
 		--enable-ssl-crtd \
 		--enable-arch-native \
 		--enable-silent-rules \
+		--disable-strict-error-checking \
 		--disable-auto-locale \
 		--disable-dependency-tracking \
 		--disable-auth \
@@ -100,8 +105,11 @@ RUN <<EOR
 		--without-netfilter-conntrack \
 		--without-tdb \
 		--without-cppunit \
-		CXXFLAGS='-Wno-error=stringop-overflow'
-	make all
+		CFLAGS="-g0 -O2" \
+		CXXFLAGS="-g0 -O2" \
+		LDFLAGS="-s"
+	nproc=$(n=$(nproc) ; max_n=6 ; echo $(( n <= max_n ? n : max_n )) )
+	make -j $nproc
 	make install
 EOR
 

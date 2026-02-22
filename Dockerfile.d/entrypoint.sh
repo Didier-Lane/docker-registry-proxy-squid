@@ -1,6 +1,12 @@
 #!/bin/ash
 set -Eeuo pipefail
 
+# Force removal of pid
+if [ -e /var/run/squid/squid.pid ]; then
+    echo "Removing previous PID"
+	rm -f /var/run/squid/squid.pid
+fi
+
 SSL_DB_DIR="/var/cache/squid/ssl_db"
 
 # Create the directory if it doesn't exist
