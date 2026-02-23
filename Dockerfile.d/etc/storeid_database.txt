@@ -1,3 +1,11 @@
-^https?:\/\/docker(.*)\/registry\/v2\/blobs\/sha256\/([^\?]*).*$	http://dockerhub.squidinternal/blobs/sha256/$2
-^https?:\/\/(.*)registry-k8s-io(.*)\/containers\/images\/sha256\:([^\?]*).*$	http://registry-k8s-io.squidinternal/images/sha256/$3
-^https?:\/\/gcr\.io\/artifacts(.*)namespaces\/([^\/]+)\/(.*)\/downloads\/(.*)$	http://gcr-io.squidinternal/$2/$4
+^https\:\/\/.*docker\.io.*\/v2\/library\/([^\/]+)\/(manifests|referrers|blobs)\/([^\?\r\n]+).*$	http://dockerhub.squidinternal/$1/$2/$3
+^https:\/\/docker.*\/registry\/v2\/blobs\/sha256\/([^\?\r\n]+).*$	http://dockerhub.squidinternal/blobs/sha256/$1
+^https\:\/\/registry\.k8s\.io.*\/v2\/([^\/]+)\/(manifests|blobs)\/([^\?\r\n]+).*$	http://registry-k8s-io.squidinternal/$1/$2/$3
+^https\:\/\/.*\/k8s-artifacts.*\/images\/([^\/]+)\/manifests\/([^\?\r\n]+).*$	http://k8s-artifacts.squidinternal/$1/manifests/$2
+^https:\/\/.*registry-k8s-io.*\/containers\/images\/sha256\:([^\?\r\n]+).*$	http://registry-k8s-io.squidinternal/images/sha256/$1
+^https:\/\/gcr\.io\/v2\/(.+)\/(manifests|blobs)\/([^\?\r\n]+).*$	http://gcr-io.squidinternal/$1/$2/$3
+^https:\/\/gcr\.io\/artifacts.*namespaces\/([^\/]+)\/.*\/downloads\/([^\?\r\n]+).*$	http://gcr-io.squidinternal/$1/$2
+^https:\/\/quay\.io\/v2\/(.+)\/(manifests|blobs)\/([^\?\r\n]+).*$	http://quay-io.squidinternal/$1/$2/$3
+^https:\/\/cdn.*quay\.io\/.*\/sha256\/([^\?\r\n]+).*namespace\=([^\&]+).*repo_name\=([^\&]+).*$	http://quay-io.squidinternal/$2/$3/$1
+^https\:\/\/.*ghcr\.io.*\/v2\/(.+)\/(manifests|referrers|blobs)\/([^\?\r\n]+).*$	http://ghcr-io.squidinternal/$1/$2/$3
+^https\:\/\/.*githubusercontent.*\/blobs\/([^\?\r\n]+).*$	http://githubusercontent.squidinternal/blobs/$1
