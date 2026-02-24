@@ -1,5 +1,5 @@
-^https\:\/\/.*docker\.io.*\/v2\/library\/([^\/]+)\/(manifests|referrers|blobs)\/([^\?\r\n]+).*$	http://dockerhub.squidinternal/$1/$2/$3
-^https:\/\/docker.*\/registry\/v2\/blobs\/sha256\/([^\?\r\n]+).*$	http://dockerhub.squidinternal/blobs/sha256/$1
+^https\:\/\/.*docker\.io.*\/v2\/(library\/)?(.+)\/(manifests|referrers|blobs)\/([^\?\r\n]+).*$	http://dockerhub.squidinternal/$2/$3/$4
+^https:\/\/.*docker.*\/registry-v2\/.*\/v2\/blobs\/sha256\/([^\?\r\n]+).*$	http://dockerhub.squidinternal/blobs/sha256/$1
 ^https\:\/\/registry\.k8s\.io.*\/v2\/([^\/]+)\/(manifests|blobs)\/([^\?\r\n]+).*$	http://registry-k8s-io.squidinternal/$1/$2/$3
 ^https\:\/\/.*\/k8s-artifacts.*\/images\/([^\/]+)\/manifests\/([^\?\r\n]+).*$	http://k8s-artifacts.squidinternal/$1/manifests/$2
 ^https:\/\/.*registry-k8s-io.*\/containers\/images\/sha256\:([^\?\r\n]+).*$	http://registry-k8s-io.squidinternal/images/sha256/$1

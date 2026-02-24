@@ -55,13 +55,12 @@ RUN <<EOR
 	tar xvzf squid.tar.gz
 EOR
 
-
 WORKDIR "/tmp/squid-SQUID_${SQUID_VERSION}"
 
 # Build Squid
 RUN <<EOR
-	MACHINE=$(uname -m)
 	autoreconf --install
+	MACHINE=$(uname -m)
 	./configure \
 		--build="$MACHINE" \
 		--host="$MACHINE" \
