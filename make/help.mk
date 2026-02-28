@@ -1,16 +1,18 @@
 .DEFAULT_GOAL := help
 
 define HEADER
-Usage
+$(underline)Usage$(reset)
 
 	# To run and execute a target
-	${bold}make ${cyan}<target>${reset}
+	$(bold)make $(cyan)<target>$(reset)
 
-Available Targets
+$(underline)Available Targets$(reset)
 
 endef
 
 .PHONY: help
-help: ## 💡 Shows This Help Menu
+help: # 💡 Shows This Help Menu
 	echo -e "$(HEADER)"
-	grep -E '(^[^\:]+:.*?## .*$$)|(^## )' $(MAKEFILE_LIST) | sed 's/^[^:]*://g' | awk 'BEGIN {FS = ":.*?## | #"} ; {printf "${bold}${blue}%-10s${reset} ${white}%s${reset} ${green}%s${reset}\n", $$1, $$2, $$3}' | sed -e 's/\[36m##/\n[32m##/'
+	grep -hEo '(^[^\: ]+:.*?# .*$$)' $(MAKEFILE_LIST) \
+		| sed -e 's/:.*# /|/g' -e 's/ /|/1' \
+		| awk -F'|' $(help_line)

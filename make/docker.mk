@@ -24,17 +24,17 @@ TLS_CA_PEM				?= ~/.ssl/local.io/CA-key-and-crt.pem
 RESTART_POLICY			?= unless-stopped
 
 .PHONY: config
-config: ## 🐋 Renders the Docker Compose file
+config: # 🐋 Renders the Docker Compose file
 	$(DOCKER) compose config
 
 .PHONY: build
-build: ## 🐋 Builds The Registry Proxy
+build: # 🐋 Builds The Registry Proxy
 	$(DOCKER) compose build
 
 .PHONY: up
-up: ## 🐋 Runs The Registry Proxy
+up: # 🐋 Runs The Registry Proxy
 	$(DOCKER) compose up --detach
 
 .PHONY: down
-down: ## 🐋 Stops The Registry Proxy
+down: # 🐋 Stops The Registry Proxy
 	$(DOCKER) compose down
