@@ -3,6 +3,8 @@ name: "${COMPOSE_PROJECT_NAME:-registry-proxy}"
 services:
 
   squid:
+    annotations:
+      nerdctl/bypass4netns: true
     container_name: "${COMPOSE_PROJECT_NAME:-registry-proxy}"
     image: "${IMAGE_REPOSITORY:-registry-proxy}:${IMAGE_TAG:-7.4}"
     build:

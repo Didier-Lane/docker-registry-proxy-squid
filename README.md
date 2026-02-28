@@ -12,8 +12,8 @@ It relies on Squid [SslBump Peek and Splice](https://wiki.squid-cache.org/Featur
 > Operations are organized as abstract make recipes, just run `make` to see the list of available targets
 
 ## Requirements
-- Docker or Nerdctl or Podman
-- Docker Compose or equivalent
+- Docker or Nerdctl
+- Docker Compose for Docker
 - OpenSSL for [generating a self-signed CA certificate](#generate-a-self-signed-ca-certificate)
 - Make
 
