@@ -1,4 +1,3 @@
-DOCKER					?= docker
 COMPOSE_PROJECT_NAME	?= registry-proxy
 
 # Ensure BuildKit is enabled for Docker Engine version earlier than 23.0
@@ -25,16 +24,16 @@ RESTART_POLICY			?= unless-stopped
 
 .PHONY: config
 config: # 🐋 Renders the Docker Compose file
-	$(DOCKER) compose config
+	docker compose config
 
 .PHONY: build
 build: # 🐋 Builds The Registry Proxy
-	$(DOCKER) compose build
+	docker compose build
 
 .PHONY: up
 up: # 🐋 Runs The Registry Proxy
-	$(DOCKER) compose up --detach
+	docker compose up --detach
 
 .PHONY: down
 down: # 🐋 Stops The Registry Proxy
-	$(DOCKER) compose down
+	docker compose down

@@ -12,8 +12,8 @@ It relies on Squid [SslBump Peek and Splice](https://wiki.squid-cache.org/Featur
 > Operations are organized as abstract make recipes, just run `make` to see the list of available targets
 
 ## Requirements
-- Docker or Nerdctl
-- Docker Compose for Docker
+- Docker
+- Docker Compose
 - OpenSSL for [generating a self-signed CA certificate](#generate-a-self-signed-ca-certificate)
 - Make
 
@@ -118,10 +118,7 @@ Run `make build` to build the Docker image
 > [!NOTE]
 > Build takes about 5 minutes to compile squid depending on your system compute capabilities
 
-## Configure your Container Runtime
-
-<details>
-<summary>Docker</summary>
+## Configure Docker
 
 Create the file `/etc/systemd/system/docker.service.d/http-proxy.conf` with the following content
 
@@ -137,36 +134,6 @@ sudo systemctl daemon-reload
 sudo systemctl restart docker.service
 ```
 
-</details>
-
-<details>
-<summary>Nerdctl / Containerd</summary>
-
-Create the file `/etc/systemd/system/containerd.service.d/http-proxy.conf` with the following content
-
-```shell
-mkdir -p /etc/systemd/system/containerd.service.d
-
-cat <<EOF | sudo tee /etc/systemd/system/containerd.service.d/http-proxy.conf
-[Service]
-Environment="HTTPS_PROXY=http://127.0.0.1:3128/"
-EOF
-
-sudo systemctl daemon-reload
-sudo systemctl restart containerd.service
-```
-
-</details>
-
-<details>
-<summary>Podman</summary>
-
-```shell
-export "HTTPS_PROXY=http://127.0.0.1:3128/"
-```
-
-</details>
-
 ## Run
 
 Run `make up` to start the Registry Proxy
@@ -177,7 +144,6 @@ Run `make up` to start the Registry Proxy
 |:--                    |:--                            |:--
 | VERBOSE               | Enable verbose output of make recipes | `false`
 | COLORS                | Enable colored display of make recipes | `yes`
-| DOCKER                | Name of the docker cli, or equivalent (eg podman) | `docker`
 | COMPOSE_PROJECT_NAME  | Name of the Docker Compose project | `registry-proxy`
 | BUILDKIT_PROGRESS     | Sets the type of the [BuildKit progress output](https://docs.docker.com/build/building/variables/#buildkit_progress) | `auto`
 | ALPINE_VERSION        | Version of The [Alpine Image](https://hub.docker.com/_/alpine) to use for building | `3.23.3`
