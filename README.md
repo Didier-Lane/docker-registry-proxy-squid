@@ -147,8 +147,8 @@ Run `make up` to start the Registry Proxy
 | COMPOSE_PROJECT_NAME  | Name of the Docker Compose project | `registry-proxy`
 | BUILDKIT_PROGRESS     | Sets the type of the [BuildKit progress output](https://docs.docker.com/build/building/variables/#buildkit_progress) | `auto`
 | ALPINE_VERSION        | Version of The [Alpine Image](https://hub.docker.com/_/alpine) to use for building | `3.23.3`
-| SQUID_VERSION         | [Squid Release version](https://github.com/squid-cache/squid/releases) used for building | `7_4`
+| SQUID_VERSION         | [Squid Release version](https://github.com/squid-cache/squid/releases) used for building | `7_5`
 | IMAGE_REPOSITORY      | Name of the Docker image built | `registry-proxy`
-| IMAGE_TAG             | Tag of the Docker image built, defaults to the `SQUID_VERSION` with a string substitution of `_` with `.` ( eg : `7_4` to `7.4` ) | `7.4`
+| IMAGE_TAG             | Tag of the Docker image built, defaults to the `SQUID_VERSION` with a string substitution of `_` with `.` ( eg : `7_5` to `7.5` ) | `7.5`
 | TLS_CA_PEM   | Path to the self-signed CA cert and key in PEM format | null
 | RESTART_POLICY        | Defines the [restart policy](https://docs.docker.com/reference/compose-file/services/#restart) of the registry proxy container | `unless-stopped`

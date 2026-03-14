@@ -4,12 +4,12 @@ services:
 
   squid:
     container_name: *project_name
-    image: ${IMAGE_REPOSITORY:-registry-proxy}:${IMAGE_TAG:-7.4}
+    image: ${IMAGE_REPOSITORY:-registry-proxy}:${IMAGE_TAG:-7.5}
     build:
       context: .
       args:
         ALPINE_VERSION: ${ALPINE_VERSION:-3.23.3}
-        SQUID_VERSION: ${SQUID_VERSION:-7_4}
+        SQUID_VERSION: ${SQUID_VERSION:-7_5}
     volumes:
       - cache:/var/cache/squid
       - ./Dockerfile.d/etc/squid.conf:/etc/squid/squid.conf:ro,z
