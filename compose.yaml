@@ -1,32 +1,30 @@
-name: "${COMPOSE_PROJECT_NAME:-registry-proxy}"
+name: &project_name ${COMPOSE_PROJECT_NAME:-registry-proxy}
 
 services:
 
   squid:
-    container_name: "${COMPOSE_PROJECT_NAME:-registry-proxy}"
-    image: "${IMAGE_REPOSITORY:-registry-proxy}:${IMAGE_TAG:-7.4}"
+    container_name: *project_name
+    image: ${IMAGE_REPOSITORY:-registry-proxy}:${IMAGE_TAG:-7.4}
     build:
       context: .
       args:
-        ALPINE_VERSION: "${ALPINE_VERSION:-3.23.3}"
-        SQUID_VERSION: "${SQUID_VERSION:-7_4}"
+        ALPINE_VERSION: ${ALPINE_VERSION:-3.23.3}
+        SQUID_VERSION: ${SQUID_VERSION:-7_4}
     volumes:
-      - type: volume
-        source: cache
-        target: /var/cache/squid
+      - cache:/var/cache/squid
       - ./Dockerfile.d/etc/squid.conf:/etc/squid/squid.conf:ro,z
       - ./Dockerfile.d/etc/storeid_database.txt:/etc/squid/storeid_database.txt:ro,z
       - "${TLS_CA_PEM}:/etc/squid/ssl/CA.pem:ro,z"
     ports:
       - 3128:3128
-    restart: "${RESTART_POLICY:-unless-stopped}"
+    restart: ${RESTART_POLICY:-unless-stopped}
 
 volumes:
   cache:
-    name: "${COMPOSE_PROJECT_NAME:-registry-proxy}"
+    name: *project_name
 
 networks:
   default:
-    name: "${COMPOSE_PROJECT_NAME:-registry-proxy}"
+    name: *project_name
     driver: bridge
     enable_ipv6: true

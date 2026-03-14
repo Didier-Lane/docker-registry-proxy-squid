@@ -11,7 +11,7 @@ BUILDKIT_PROGRESS		?= auto
 ALPINE_VERSION			?= 3.23.3
 
 # https://github.com/squid-cache/squid/releases
-SQUID_VERSION			?= 7_4
+SQUID_VERSION			?= 7_5
 
 IMAGE_REPOSITORY		?= $(COMPOSE_PROJECT_NAME)
 IMAGE_TAG				?= $(subst _,.,$(SQUID_VERSION))
