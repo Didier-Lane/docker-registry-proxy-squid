@@ -12,4 +12,5 @@
 	RESTART_POLICY=$(RESTART_POLICY)
 	EOF
 
-%:: .env;
+.DEFAULT: .env
+	$(MAKE) help

@@ -1,5 +1,8 @@
 # https://www.gnu.org/software/make/manual/make.html
 
+# Do not print directory changes when using recursive make commands with the variable MAKE
+MAKE += --no-print-directory
+
 # all lines of the recipe will be given to a single invocation of the shell
 # rather than each line being invoked separately
 .ONESHELL:
