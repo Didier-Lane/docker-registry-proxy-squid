@@ -133,3 +133,8 @@ COPY --chmod=0644 Dockerfile.d/etc /etc/squid
 COPY --chmod=+x Dockerfile.d/entrypoint.sh /entrypoint.sh
 
 ENTRYPOINT ["/entrypoint.sh"]
+
+HEALTHCHECK \
+	--interval=30s --timeout=5s --retries=3 \
+	--start-period=5s --start-interval=5s \
+	CMD /bin/ash -Eeuo pipefail -c "test -f /var/run/squid/squid.pid"
