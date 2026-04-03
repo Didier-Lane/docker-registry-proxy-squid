@@ -147,7 +147,10 @@ Run `make up` to start the Registry Proxy
 | COMPOSE_PROJECT_NAME  | Name of the Docker Compose project | `registry-proxy`
 | BUILDKIT_PROGRESS     | Sets the type of the [BuildKit progress output](https://docs.docker.com/build/building/variables/#buildkit_progress) | `auto`
 | ALPINE_VERSION        | Version of The [Alpine Image](https://hub.docker.com/_/alpine) to use for building | `3.23.3`
+| ALPINE_DIGEST        | Digest of The [Alpine Image Tag](https://hub.docker.com/layers/library/alpine/3.23.3/images/sha256-59855d3dceb3ae53991193bd03301e082b2a7faa56a514b03527ae0ec2ce3a95) to use for building | `sha256:59855d3dceb3ae53991193bd03301e082b2a7faa56a514b03527ae0ec2ce3a95`
 | SQUID_VERSION         | [Squid Release version](https://github.com/squid-cache/squid/releases) used for building | `7_5`
+| SQUID_ARCHIVE_DIGEST         | Digest of the [Squid Release](https://github.com/squid-cache/squid/releases) archive | `sha256:f6058907db0150d2f5d228482b5a9e5678920cf368ae0ccbcecceb2ff4c35106`
+| SQUID_SIGNATURE_DIGEST         | Digest of the [Squid Release](https://github.com/squid-cache/squid/releases) archive signature | `sha256:2637a60ea4e30e7573641d7b07fe8551f063aed08c274287e8fddc23aeda0b28`
 | IMAGE_REPOSITORY      | Name of the Docker image built | `registry-proxy`
 | IMAGE_TAG             | Tag of the Docker image built, defaults to the `SQUID_VERSION` with a string substitution of `_` with `.` ( eg : `7_5` to `7.5` ) | `7.5`
 | TLS_CA_PEM   | Path to the self-signed CA cert and key in PEM format | null

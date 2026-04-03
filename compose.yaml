@@ -1,15 +1,18 @@
-name: &project_name ${COMPOSE_PROJECT_NAME:-registry-proxy}
+name: &project_name ${COMPOSE_PROJECT_NAME}
 
 services:
 
   squid:
     container_name: *project_name
-    image: ${IMAGE_REPOSITORY:-registry-proxy}:${IMAGE_TAG:-7.5}
+    image: ${IMAGE_REPOSITORY}:${IMAGE_TAG}
     build:
       context: .
       args:
-        ALPINE_VERSION: ${ALPINE_VERSION:-3.23.3}
-        SQUID_VERSION: ${SQUID_VERSION:-7_5}
+        ALPINE_VERSION: ${ALPINE_VERSION}
+        ALPINE_DIGEST: ${ALPINE_DIGEST}
+        SQUID_VERSION: ${SQUID_VERSION}
+        SQUID_ARCHIVE_DIGEST: ${SQUID_ARCHIVE_DIGEST}
+        SQUID_SIGNATURE_DIGEST: ${SQUID_SIGNATURE_DIGEST}
     volumes:
       - cache:/var/cache/squid
       - ./Dockerfile.d/etc/squid.conf:/etc/squid/squid.conf:ro,z
@@ -17,7 +20,7 @@ services:
       - "${TLS_CA_PEM}:/etc/squid/ssl/CA.pem:ro,z"
     ports:
       - 3128:3128
-    restart: ${RESTART_POLICY:-unless-stopped}
+    restart: ${RESTART_POLICY}
 
 volumes:
   cache:

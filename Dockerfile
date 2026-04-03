@@ -1,12 +1,13 @@
 # https://hub.docker.com/r/docker/dockerfile
 # syntax=docker/dockerfile:1.21
 
-ARG ALPINE_VERSION="${ALPINE_VERSION:-3.23.3}"
+ARG ALPINE_VERSION=3.23.3
+ARG ALPINE_DIGEST=sha256:59855d3dceb3ae53991193bd03301e082b2a7faa56a514b03527ae0ec2ce3a95
 
 #
 # base stage
 #
-FROM alpine:${ALPINE_VERSION} AS base
+FROM alpine:${ALPINE_VERSION}@${ALPINE_DIGEST} AS base
 
 SHELL ["/bin/ash", "-Eeuo", "pipefail", "-c"]
 
@@ -36,12 +37,24 @@ EOR
 #
 FROM base AS build
 
-ARG SQUID_VERSION
+ARG SQUID_VERSION=7_5
+ARG SQUID_ARCHIVE_DIGEST=sha256:f6058907db0150d2f5d228482b5a9e5678920cf368ae0ccbcecceb2ff4c35106
+ARG SQUID_SIGNATURE_DIGEST=sha256:2637a60ea4e30e7573641d7b07fe8551f063aed08c274287e8fddc23aeda0b28
+
+ENV SQUID_RELEASES=https://github.com/squid-cache/squid/releases
+ENV SQUID_ARCHIVE="squid-${SQUID_VERSION/_/.}.tar.xz"
+ENV SQUID_ARCHIVE_URL="${SQUID_RELEASES}/download/SQUID_${SQUID_VERSION}/${SQUID_ARCHIVE}"
+ENV SQUID_ARCHIVE_DIGEST_HASH="${SQUID_ARCHIVE_DIGEST#*:}"
+ENV SQUID_ARCHIVE_DIGEST_ALG="${SQUID_ARCHIVE_DIGEST%:*}"
+ENV SQUID_SIGNATURE="${SQUID_ARCHIVE}.asc"
+ENV SQUID_SIGNATURE_URL="${SQUID_RELEASES}/download/SQUID_${SQUID_VERSION}/${SQUID_SIGNATURE}"
+ENV SQUID_SIGNATURE_DIGEST_HASH="${SQUID_SIGNATURE_DIGEST#*:}"
+ENV SQUID_SIGNATURE_DIGEST_ALG="${SQUID_SIGNATURE_DIGEST%:*}"
 
 WORKDIR /tmp
 
+# Install build dependencies
 RUN <<EOR
-	# Build deps
 	apk add --no-cache \
 		curl \
 		openssl-dev \
@@ -49,17 +62,39 @@ RUN <<EOR
 		automake \
 		autoconf \
 		libtool \
-		libcap
-	# Prepare Squid source
-	curl -fSLo squid.tar.gz "https://github.com/squid-cache/squid/archive/refs/tags/SQUID_${SQUID_VERSION}.tar.gz"
-	tar xvzf squid.tar.gz
+		libcap \
+		gnupg
 EOR
 
-WORKDIR "/tmp/squid-SQUID_${SQUID_VERSION}"
+# Prepare Squid source
+RUN <<EOR
+	# get squid sources tarball
+	curl -fSLO "$SQUID_ARCHIVE_URL"
+	# checksum of sources digest
+	# echo "f6058907db0150d2f5d228482b5a9e5678920cf368ae0ccbcecceb2ff4c35106" squid-7.5.tar.xz | "sha256sum" -c -
+	echo "$SQUID_ARCHIVE_DIGEST_HASH" "$SQUID_ARCHIVE" | "${SQUID_ARCHIVE_DIGEST_ALG}sum" -c -
+	# get signature for squid.tar.xz
+	curl -fSLO "$SQUID_SIGNATURE_URL"
+	# checksum of signature digest
+	# echo "2637a60ea4e30e7573641d7b07fe8551f063aed08c274287e8fddc23aeda0b28" squid-7.5.tar.xz.asc | "sha256sum" -c -
+	echo "${SQUID_SIGNATURE_DIGEST_HASH}" "$SQUID_SIGNATURE" | "${SQUID_SIGNATURE_DIGEST_ALG}sum" -c -
+	# verify squid sources tarball with the gpg signature
+	key="$( grep -Eo '^Key\s+:\s+([A-Z0-9]+)' $SQUID_SIGNATURE | sed 's/Key\s*:\s*//g' )"
+	keyring="$( grep -Eo '^Keyring\s*:.*' $SQUID_SIGNATURE | sed 's/Keyring\s*:\s*//g' )"
+	keyserver="$( grep -Eo '^Keyserver\s*:.*' $SQUID_SIGNATURE | sed 's/Keyserver\s*:\s*//g' )"
+	echo "key=$key"
+	echo "keyring=$keyring"
+	echo "keyserver=$keyserver"
+	gpg --status-fd 1 --keyring "$keyring" --keyserver "$keyserver" --recv-keys "$key"
+	gpg --status-fd 1 --verify "$SQUID_SIGNATURE" "$SQUID_ARCHIVE"
+	# extract the squid sources tarball
+	tar xvf "$SQUID_ARCHIVE"
+EOR
+
+WORKDIR "/tmp/squid-${SQUID_VERSION/_/.}"
 
 # Build Squid
 RUN <<EOR
-	autoreconf --install
 	MACHINE=$(uname -m)
 	./configure \
 		--build="$MACHINE" \
