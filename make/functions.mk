@@ -19,7 +19,7 @@ endef
 
 define release_install
 binary="$(call untilde,$(5))"
-$(call message,📥,Installing $(1) version,$(2),to,$${binary})
+$(call message,📥,Installing $(hl)$(1)$(rs) version $(hl)$(2)$(rs) to $(hl)$${binary}$(rs))
 $(call download,$(3),$${binary})
 $(call checksum,$(4),$${binary})
 $(call executable,$${binary})
@@ -30,10 +30,13 @@ cache="$$( mktemp )"
 result="$$( curl -sSL https://api.github.com/repos/$(1)/releases/latest > "$${cache}" )"
 latest="$$( jq -r '.tag_name' < "$${cache}" )"
 if [[ "$${latest}" == "$(2)" ]]; then
-	$(call message,✅,Repository,$(1),is up to date with latest version,$${latest})
+	$(call message,✅,Repository $(hl)$(1)$(rs) is up to date with latest version $(hl)$${latest}$(rs))
 else
-	digest="$$( jq -r '.assets[] | select(.name == "$(3)") | .digest' < "$${cache}" )"
-	$(call message,💡,New version is,$${latest},with digest,$${digest})
+	$(call message,💡,Repository $(hl)$(1)$(rs) new version is $(hl)$${latest}$(rs))
+	for asset in $(3); do
+		digest="$$( jq -r '.assets[] | select(.name == "'"$${asset}"'") | .digest' < "$${cache}" )"
+		$(call message,📦,Asset $(hl)$${asset}$(rs) digest is $(hl)$${digest}$(rs))
+	done
 fi
 rm "$${cache}"
 endef
