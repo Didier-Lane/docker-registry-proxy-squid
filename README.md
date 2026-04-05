@@ -40,6 +40,7 @@ default_bits       = 4096
 prompt             = no
 default_md         = SHA384
 distinguished_name = dn
+req_extensions     = v3_req
 [ dn ]
 countryName  = FR
 stateOrProvinceName = Paris
@@ -63,7 +64,7 @@ openssl req -new -SHA384 -nodes -out CA.csr -key CA.key -config CA.cnf
 Create the CA certificate
 
 ```shell
-openssl x509 -req -SHA384 -days 3650 -in CA.csr -signkey CA.key -extfile CA.cnf -extensions v3_req -out CA.crt
+openssl x509 -req -SHA384 -days 3650 -in CA.csr -signkey CA.key -extfile CA.cnf -out CA.crt
 ```
 
 Finally concat the CA key and cert for later use with squid
@@ -118,9 +119,12 @@ Run `make build` to build the Docker image
 > [!NOTE]
 > Build takes about 5 minutes to compile squid depending on your system compute capabilities
 
-## Configure Docker
+## Configure Container Runtime
 
-Create the file `/etc/systemd/system/docker.service.d/http-proxy.conf` with the following content
+<details>
+<summary>Docker</summary>
+
+>Create the file `/etc/systemd/system/docker.service.d/http-proxy.conf` with the following content
 
 ```shell
 mkdir -p /etc/systemd/system/docker.service.d
@@ -133,6 +137,27 @@ EOF
 sudo systemctl daemon-reload
 sudo systemctl restart docker.service
 ```
+
+</details>
+
+<details>
+<summary>Containerd</summary>
+
+>Create the file `/etc/systemd/system/containerd.service.d/http-proxy.conf` with the following content
+
+```shell
+mkdir -p /etc/systemd/system/containerd.service.d
+
+cat <<EOF | sudo tee /etc/systemd/system/containerd.service.d/http-proxy.conf
+[Service]
+Environment="HTTPS_PROXY=http://127.0.0.1:3128/"
+EOF
+
+sudo systemctl daemon-reload
+sudo systemctl restart containerd.service
+```
+
+</details>
 
 ## Run
 
