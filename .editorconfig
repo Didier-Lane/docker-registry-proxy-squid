@@ -7,7 +7,7 @@ end_of_line = lf
 insert_final_newline = true
 trim_trailing_whitespace = true
 
-[{Makefile,*.mk,Dockerfile*,*.conf,storeid_database.txt}]
+[{Makefile,*.mk,Dockerfile*,*.conf,*.db}]
 indent_style = tab
 
 [{*.yaml,*.yml}]

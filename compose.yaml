@@ -18,7 +18,7 @@ services:
     volumes:
       - cache:/var/cache/squid
       - ./Dockerfile.d/etc/squid.conf:/etc/squid/squid.conf:ro,z
-      - ./Dockerfile.d/etc/storeid_database.txt:/etc/squid/storeid_database.txt:ro,z
+      - ./Dockerfile.d/etc/storeid.db:/etc/squid/storeid.db:ro,z
       - ${TLS_CA_PEM}:/etc/squid/ssl/CA.pem:ro,z
     ports:
       - 3128:3128
