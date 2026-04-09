@@ -17,13 +17,11 @@ endif
 # includes working copy environment variables
 -include .env
 
-# enables make recipes verbosity
-VERBOSE ?= false
-
 # flags of invoked shell in make recipes
 .SHELLFLAGS = -Eeu -o pipefail
 
-ifeq ($(VERBOSE),true)
+# enables make recipes verbosity
+ifdef VERBOSE
 .SHELLFLAGS += -x
 else
 .SILENT:
