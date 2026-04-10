@@ -164,7 +164,6 @@ VOLUME /var/cache/squid
 EXPOSE 3128
 
 COPY --chmod=0644 Dockerfile.d/etc /etc/squid
-
 COPY --chmod=+x Dockerfile.d/entrypoint.sh /entrypoint.sh
 
 ENTRYPOINT ["/entrypoint.sh"]
