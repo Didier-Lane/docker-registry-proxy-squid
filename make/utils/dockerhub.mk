@@ -3,7 +3,19 @@ DOCKER_HUB_API_ENDPOINT	:= https://hub.docker.com/v2
 define docker_api_get_tags
 curl -fsSL \
 	"$(DOCKER_HUB_API_ENDPOINT)/namespaces/$(1)/repositories/$(2)/tags" \
-	| jq -c
+	| jq -c '[.results[] | select(.images[].architecture == "$(ARCH)")]'
+endef
+
+define jq_get_docker_latest_image_digest
+jq -r '.[] | select(.name | contains("latest"))
+	| .images[] | select(.architecture == "$(ARCH)")' \
+	< "$(1)" | jq -rs 'first | .digest'
+endef
+
+define jq_get_docker_tag_by_image_digest
+jq -r '.[] | select(.name != "latest")
+	| select(.images[].digest == "'"$(1)"'")' \
+	< "$(2)" | jq -rs 'first | .name'
 endef
 
 define docker_check_version
@@ -16,16 +28,14 @@ else
 fi
 cache="$$( mktemp )"
 $(call docker_api_get_tags,$${namespace},$${repository}) > "$${cache}"
-latestDigest="$$( jq -r '.results[] | select(.name == "latest") | .digest' < "$${cache}" )"
-latestTag="$$( jq '.results[] | select(.digest == "'"$${latestDigest}"'")
-	| select(.name != "latest")' < "$${cache}" | jq -rs 'first | .name' )"
-if [[ "$${latestTag}" == "$(2)" ]]; then
+latestDigest="$$( $(call jq_get_docker_latest_image_digest,$${cache}) )"
+latestTag="$$( $(call jq_get_docker_tag_by_image_digest,$${latestDigest},$${cache}) )"
+if [[ "$${latestTag}" == "null" ]]; then
+	$(call message,⚠️ ,Failed to resolve $(hl)$(1)$(rs) latest tag)
+elif [[ "$${latestTag}" == "$(2)" ]]; then
 	$(call message,✅,Image $(hl)$(1)$(rs) is up to date with tag $(hl)$(2)$(rs))
 else
-	$(call message,💡,Image $(hl)$(1)$(rs) new tag is $(hl)$${latestTag}$(rs))
-	digest="$$( jq -r '.results[] | select(.name == "'"$${latestTag}"'")
-		| .images[] | select(.architecture == "$(ARCH)") | .digest' < "$${cache}" )"
-	$(call message,📦,Image tag $(hl)$${latestTag}$(rs) digest is $(hl)$${digest}$(rs))
+	$(call message,💡,Image $(hl)$(1)$(rs) new tag is $(hl)$${latestTag}$(rs) with digest $(hl)$${latestDigest}$(rs))
 fi
 rm "$${cache}"
 endef
