@@ -1,0 +1,37 @@
+define path
+$(subst ~,$(HOME),$(1))
+endef
+
+define download
+curl -fSLo "$(2)" "$(1)"
+endef
+
+define checksum
+DIGEST="$(1)"
+ALG="$${DIGEST%:*}"
+HASH="$${DIGEST#*:}"
+echo "$${HASH}" "$(2)" | "$${ALG}sum" --check -
+endef
+
+define executable
+chmod +x "$(1)"
+endef
+
+define extract
+case "$$( file --brief --mime-type "$(1)" )" in
+	*/gzip) tar -C "$(call path,$(BIN_DIR))" -xzf "$(1)";;
+esac
+endef
+
+define release_install
+$(call message,📥,Installing $(hl)$(1)$(rs) version $(hl)$(2)$(rs) to $(hl)$(5)$(rs))
+$(call download,$(3),$(5))
+$(call checksum,$(4),$(5))
+$(call extract,$(5))
+$(call executable,$(5))
+endef
+
+define random_hash
+[ ! -z "$(1)" ] && length="$(1)" || length="24"
+tr -dc 'A-Za-z0-9!%&()*+,-.:;<=>?@_' </dev/urandom | head -c "$${length}"; echo
+endef
