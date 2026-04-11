@@ -167,8 +167,6 @@ Run `make up` to start the Registry Proxy
 
 | Name                  |     Description               | Default value
 |:--                    |:--                            |:--
-| VERBOSE               | Enable verbose output of make recipes | `false`
-| COLORS                | Enable colored display of make recipes | `yes`
 | COMPOSE_PROJECT_NAME  | Name of the Docker Compose project | `registry-proxy`
 | BUILDKIT_PROGRESS     | Sets the type of the [BuildKit progress output](https://docs.docker.com/build/building/variables/#buildkit_progress) | `auto`
 | ALPINE_VERSION        | Version of The [Alpine Image](https://hub.docker.com/_/alpine) to use for building | `3.23.3`
