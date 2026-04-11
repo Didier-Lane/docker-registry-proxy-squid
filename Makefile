@@ -32,5 +32,26 @@ endif
 # shares all environment variables accross makefiles
 .EXPORT_ALL_VARIABLES:
 
+# list of dependencies required by the project
+DEPENDENCIES	?=
+
+# list of all makefiles
+ALL_MAKEFILES			:= $(shell find ./make -type f -name '*.mk')
+
+# list of dependencies folders
+DEPS_FOLDERS			:= $(shell find ./make -type d -name deps)
+
+# list of dependencies makefiles
+DEPS_MAKEFILES 			:= $(filter $(foreach path,$(DEPS_FOLDERS),$(path)%mk),$(ALL_MAKEFILES))
+
+# list of makefiles filtered out with dependencies makefiles
+MAKEFILES_WITHOUT_DEPS	:= $(filter-out $(foreach path,$(DEPS_FOLDERS),$(path)%mk),$(ALL_MAKEFILES))
+
+# list of selected dependencies makefiles
+SELECTED_DEPS_MAKEFILES	:= $(filter $(foreach dep,$(DEPENDENCIES),%/deps/$(dep).mk),$(DEPS_MAKEFILES))
+
+# list of included makefiles
+INCLUDED_MAKEFILES		:= $(strip $(MAKEFILES_WITHOUT_DEPS) $(SELECTED_DEPS_MAKEFILES))
+
 # includes sub makefiles from the "make" directory
--include $(shell find ./make -type f -name '*.mk')
+-include $(INCLUDED_MAKEFILES)

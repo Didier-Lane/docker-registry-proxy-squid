@@ -7,9 +7,9 @@
 This project is about providing the basic structure and utilities for operations abstracted by Make recipes
 
 It includes
-- managing the automatic creation of an `.env` file for storing environment variables
-- an automated helper which parses the recipes comments to present the available commands to the user
-- utilities for diverse functionnalities such as checking for newer github projects releases or newer docker immutable tags
+- managing the [automatic creation of an `.env` file](./make/utils/env.mk) for storing environment variables
+- an [automated helper](./make/utils/help.mk) which parses the recipes comments to present the available commands to the user
+- utilities for diverse functionnalities such as checking for [newer github projects releases](./make/utils/github.mk) or [newer docker immutable tags](./make/utils/dockerhub.mk)
 
 ### Requirements
 
@@ -26,11 +26,11 @@ It includes
 └── Makefile
 ```
 
-The `Makefile` is the main file invoked by make, it includes all files ending by `.mk` from the `make` directory as sub makefiles.
+The `Makefile` is the main file invoked by make, it controls the inclusion of files ending by `.mk` from the `make` directory as sub makefiles.
 
-The `make/deps` directory stores the makefiles to manage automatic installation of dependencies binaries.
+The `make/deps` directory stores the makefiles to manage automatic installation of [dependencies](#dependencies) through [Make prerequisites](https://www.gnu.org/software/make/manual/make.html#Rule-Syntax).
 
-The `make/utils` directory holds the makefiles utilities such as base environment variables, messages display management, and so on.
+The `make/utils` directory holds the makefiles utilities such as [host environment variables](./make/utils/host.mk), [messages display management](./make/utils/display.mk), and so on.
 
 ## Usage
 
@@ -49,6 +49,23 @@ Available Targets
 
 clean           ✨ Cleans The Working Copy
 help            💡 Shows This Help Menu
+```
+
+### Dependencies
+
+Dependencies are binaries required for some recpies of your project, for example the [./make/deps/jq.mk](./make/deps/jq.mk) makefile holds the recipes to download and install [JQ command-line JSON processor](https://github.com/jqlang/jq)
+
+Enabling the inclusion of dependencies makefiles is controlled by the `DEPENDENCIES` environment variable when invoking make, for example, to enable the `jq` dependency run the following command when creating the `.env` file
+
+```shell
+make DEPENDENCIES=jq
+```
+
+Then once the `jq` dependency is enabled, you can use it as a [prerequisite](https://www.gnu.org/software/make/manual/make.html#Rule-Syntax) of a recipe
+
+```shell
+test.json: jq
+    jq -n '.foo = "bar" | .bar = "foo"' > test.json
 ```
 
 ## Adding recipes
