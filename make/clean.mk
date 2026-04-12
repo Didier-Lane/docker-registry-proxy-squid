@@ -1,3 +1,9 @@
+ifndef CLEAN_COMMAND
+define CLEAN_COMMAND
+rm -f .env
+endef
+endif
+
 .PHONY: clean
 clean: ## ✨ Cleans The Working Copy
-	rm -f .env $(REMOVABLE_FILES)
+	$(CLEAN_COMMAND)
