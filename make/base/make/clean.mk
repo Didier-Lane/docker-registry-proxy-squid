@@ -5,5 +5,5 @@ endef
 endif
 
 .PHONY: clean
-clean: ## ✨ Cleans The Working Copy
+clean: # ✨ Cleans the working copy
 	$(CLEAN_COMMAND)

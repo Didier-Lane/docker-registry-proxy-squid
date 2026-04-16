@@ -33,7 +33,7 @@ endif
 .EXPORT_ALL_VARIABLES:
 
 # list of dependencies required by the project
-DEPENDENCIES	?=
+DEPENDENCIES			?= $(DEPS)
 
 # list of all makefiles
 ALL_MAKEFILES			:= $(shell find ./make -type f -name '*.mk')
@@ -44,14 +44,21 @@ DEPS_FOLDERS			:= $(shell find ./make -type d -name deps)
 # list of dependencies makefiles
 DEPS_MAKEFILES 			:= $(filter $(foreach path,$(DEPS_FOLDERS),$(path)%mk),$(ALL_MAKEFILES))
 
-# list of makefiles filtered out with dependencies makefiles
-MAKEFILES_WITHOUT_DEPS	:= $(filter-out $(foreach path,$(DEPS_FOLDERS),$(path)%mk),$(ALL_MAKEFILES))
+# includes makefiles filtered out with dependencies makefiles
+INCLUDED_MAKEFILES		:= $(filter-out $(foreach path,$(DEPS_FOLDERS),$(path)%mk),$(ALL_MAKEFILES))
 
-# list of selected dependencies makefiles
-SELECTED_DEPS_MAKEFILES	:= $(filter $(foreach dep,$(DEPENDENCIES),%/deps/$(dep).mk),$(DEPS_MAKEFILES))
+# implements dependencies
+ifneq (,$(DEPENDENCIES))
 
-# list of included makefiles
-INCLUDED_MAKEFILES		:= $(strip $(MAKEFILES_WITHOUT_DEPS) $(SELECTED_DEPS_MAKEFILES))
+# appends the host dependency to the list
+ifeq (,$(findstring host,$(DEPENDENCIES)))
+override DEPENDENCIES 	+= host
+endif
+
+# appends selected dependencies makefiles to the include list
+INCLUDED_MAKEFILES		+= $(filter $(foreach dep,$(DEPENDENCIES),%/deps/$(dep).mk),$(DEPS_MAKEFILES))
+
+endif
 
 # includes sub makefiles from the "make" directory
 -include $(INCLUDED_MAKEFILES)
