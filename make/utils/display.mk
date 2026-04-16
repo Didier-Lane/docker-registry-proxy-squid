@@ -2,12 +2,9 @@ define message
 echo "$(2) $(3)"
 endef
 
-define help_line
-'{gsub(/^ /, "", $$3); printf "%-16s %s\n", $$1, $$3}'
-endef
-
 ifndef NOCOLORS
 ifneq (,$(findstring color,$(TERM)))
+COLORS			:= yes
 reset			:= \033[0m
 bold			:= \033[1m
 underline		:= \033[4m
@@ -25,10 +22,6 @@ rs				:= $(reset)
 
 define message
 echo -e "$(1) $(2) $(3)"
-endef
-
-define help_line
-'{printf "$(hl)%-16s$(rs)%s %s\n", $$1, $$2, $$3}'
 endef
 
 endif
