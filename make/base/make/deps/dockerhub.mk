@@ -10,6 +10,11 @@ define jq_get_docker_latest_image_digest
 extra=""
 if [ ! -z "$(2)" ]; then
 	for tag in $(2); do
+		extra+=' | select(.name | contains("'"$${tag}"'"))'
+	done
+fi
+if [ ! -z "$(3)" ]; then
+	for tag in $(3); do
 		extra+=' | select(.name | contains("'"$${tag}"'") | not)'
 	done
 fi
@@ -32,14 +37,17 @@ if [[ "$${repository}" =~ .*/.* ]]; then
 else
 	namespace="library"
 fi
+currentTag="$(2)"
+includedTags="$(3)"
+excludedTags="$(4)"
 cache="$$( mktemp )"
 $(call docker_api_get_tags,$${namespace},$${repository}) > "$${cache}"
-latestDigest="$$( $(call jq_get_docker_latest_image_digest,$${cache},$(3)) )"
+latestDigest="$$( $(call jq_get_docker_latest_image_digest,$${cache},$${includedTags},$${excludedTags}) )"
 latestTag="$$( $(call jq_get_docker_tag_by_image_digest,$${latestDigest},$${cache}) )"
 if [[ "$${latestTag}" == "null" ]]; then
 	$(call message,⚠️ ,Failed to resolve $(hl)$(1)$(rs) latest tag)
-elif [[ "$${latestTag}" == "$(2)" ]]; then
-	$(call message,✅,Image $(hl)$(1)$(rs) is up to date with tag $(hl)$(2)$(rs))
+elif [[ "$${latestTag}" == "$${currentTag}" ]]; then
+	$(call message,✅,Image $(hl)$(1)$(rs) is up to date with tag $(hl)$${currentTag}$(rs))
 else
 	$(call message,💡,Image $(hl)$(1)$(rs) new tag is $(hl)$${latestTag}$(rs) with digest $(hl)$${latestDigest}$(rs))
 fi
