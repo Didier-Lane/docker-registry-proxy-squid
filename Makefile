@@ -50,9 +50,16 @@ INCLUDED_MAKEFILES		:= $(filter-out $(foreach path,$(DEPS_FOLDERS),$(path)%mk),$
 # implements dependencies
 ifneq (,$(DEPENDENCIES))
 
-# appends the host dependency to the list
+# appends the host dependency to the list if not present
 ifeq (,$(findstring host,$(DEPENDENCIES)))
 override DEPENDENCIES 	+= host
+endif
+
+# appends the jq dependency to the list for github or dockerhub if not present
+ifneq (,$(or $(findstring dockerhub,$(DEPENDENCIES)),$(findstring github,$(DEPENDENCIES))))
+ifeq (,$(findstring jq,$(DEPENDENCIES)))
+override DEPENDENCIES 	+= jq
+endif
 endif
 
 # appends selected dependencies makefiles to the include list

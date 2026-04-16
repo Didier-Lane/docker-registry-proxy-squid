@@ -19,7 +19,8 @@ endef
 
 define extract
 case "$$( file --brief --mime-type "$(1)" )" in
-	*/gzip) tar -C "$(dir $(1))" -xzf "$(1)";;
+	*/x-bzip2|*/gzip|*/x-xz) tar -C "$(dir $(1))" -xf "$(1)";;
+	*/zip) unzip -d "$(dir $(1))" "$(1)";;
 esac
 endef
 
