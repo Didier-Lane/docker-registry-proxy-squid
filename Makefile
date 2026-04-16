@@ -1,2 +1,2 @@
-DEPENDENCIES = jq
+DEPENDENCIES = github dockerhub
 include make/base/Makefile

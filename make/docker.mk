@@ -8,8 +8,8 @@ DOCKER_BUILDKIT 		:= 1
 BUILDKIT_PROGRESS		?= auto
 
 # https://hub.docker.com/_/alpine
-ALPINE_VERSION			?= 3.23.3
-ALPINE_DIGEST			?= sha256:59855d3dceb3ae53991193bd03301e082b2a7faa56a514b03527ae0ec2ce3a95
+ALPINE_VERSION			?= 3.23.4
+ALPINE_DIGEST			?= sha256:4d889c14e7d5a73929ab00be2ef8ff22437e7cbc545931e52554a7b00e123d8b
 
 # https://github.com/squid-cache/squid/releases
 SQUID_REPOSITORY		:= squid-cache/squid

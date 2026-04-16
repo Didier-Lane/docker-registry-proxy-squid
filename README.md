@@ -4,9 +4,11 @@
 
 ## About
 
-This project provides a cache reverse proxy to prevent pull rate limiting and speed up the kick-off a local Kubernetes cluster such as [Kind](https://kind.sigs.k8s.io/), [VIND](https://github.com/loft-sh/vind) or any other "In Docker" equivalents
+This project provides a cache reverse proxy to prevent pull rate limiting and speed up the kick-off a local Kubernetes cluster such as [Kind](https://kind.sigs.k8s.io/), [VIND](https://github.com/loft-sh/vind) or any other "In Docker" equivalents.
 
-It relies on Squid [SslBump Peek and Splice](https://wiki.squid-cache.org/Features/SslPeekAndSplice) feature to cache docker images
+It relies on Squid [SslBump Peek and Splice](https://wiki.squid-cache.org/Features/SslPeekAndSplice) feature to cache docker images.
+
+It includes the [makefile-base](https://github.com/Didier-Lane/makefile-base) project as a Git Subtree in the [make/base](./make/base) directory.
 
 > [!TIP]
 > Operations are organized as abstract make recipes, just run `make` to see the list of available targets
