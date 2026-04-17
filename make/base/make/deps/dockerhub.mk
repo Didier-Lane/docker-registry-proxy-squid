@@ -18,7 +18,7 @@ if [ ! -z "$(3)" ]; then
 		extra+=' | select(.name | contains("'"$${tag}"'") | not)'
 	done
 fi
-jq -r '.[] | select(.name | contains("latest") | not)'"$${extra}"'
+jq -r '.[] | select(.name | contains("latest")) '"$${extra}"'
 	| .images[] | select(.architecture == "$(ARCH)")' \
 	< "$(1)" | jq -rs 'first | .digest'
 endef
