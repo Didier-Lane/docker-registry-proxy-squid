@@ -1,6 +1,6 @@
 ## DockerHub
 
-The `dockerhub` [dependency] provides a function called `docker_check_version` for checking for docker [immutable tags], it is controlled by the [make/deps/dockerhub.mk] Makefile.
+The `dockerhub` [dependency] provides a function called `dockerhub_check_version` for checking for docker [immutable tags], it is controlled by the [make/deps/dockerhub.mk] Makefile.
 
 To Enable it, add `dockerhub` to the `DEPENDENCIES` [environment variable] when invoking make to create the [`.env`] file.
 
@@ -17,25 +17,25 @@ The main concept is
 
 - Retrieving the tags of a DockerHub repository through the DockerHub API
 - Reducing the results by tags including the host processor architecture
-- Retrieving the digest of the `latest` tag image for the host processor architecture
-- Retrieving the [immutable tag][immutable tags] sharing the `latest` tag image digest
+- Resolving the digest of the reference tag ( `latest` by default ) image for the host processor architecture
+- Retrieving the [immutable tag][immutable tags] sharing the reference tag image digest
 - Compare the [immutable tag][immutable tags] with the current tag
 
 ### Usage
 
 #### Arguments
 
-The `docker_check_version` method accepts the following arguments
+The `dockerhub_check_version` method accepts the following arguments
 
-| Description                                                   | Examples
-|:--                                                            |:--
-| dockerhub repository                                          | `alpine`, `rustfs/rustfs`
-| current tag to check against                                  | `3.23.3`, `1.0.0-alpha.93`
-| space delimited list of string to match against tags          | `edge`, `glibc`
-| space delimited list of string to **not** match against tags  | `edge`, `glibc`
+| Description                                                   			| Examples
+|:--                                                            			|:--
+| dockerhub repository                                          			| `alpine`, `debian`, `rustfs/rustfs`
+| current tag to check against                                  			| `3.23.3`, `13.4-slim`, `1.0.0-alpha.93`
+| the reference tag from which the digest is resolved          				| `latest`, `13-slim`
+| space delimited list of tags to exclude in addition to the reference tag 	| `edge`, `glibc`, `trixie`
 
 >[!NOTE]
->As per design the function `docker_check_version` excludes the `latest` tag to only check for Docker [immutable tags].
+>As per design the function `dockerhub_check_version` excludes the `latest` tag to only check for Docker [immutable tags].
 
 #### Example
 
@@ -44,11 +44,11 @@ This can be invoked with the [call function] from a Makefile as the bellow examp
 ```shell
 .PHONY: test
 test: jq
-	$(call docker_check_version,alpine,3.23.3,,edge)
+	$(call dockerhub_check_version,alpine,3.23.3)
 ```
 
 >[!TIP]
->The above example declares a [phony target] called `test` which checks if there is a newer tag than `3.23.3` for the `alpine` repository excluding tags matching `edge`.
+>The above example declares a [phony target] called `test` which checks if there is a newer tag than `3.23.3` for the `alpine` repository.
 
 >[!NOTE]
 >It will also automatically install [JQ] when invoking `make test` because it has `jq` as [prerequisite].
