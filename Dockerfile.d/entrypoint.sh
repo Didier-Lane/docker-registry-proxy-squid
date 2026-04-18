@@ -1,4 +1,4 @@
-#!/bin/ash
+#!/bin/bash
 set -Eeuo pipefail
 
 # Force removal of pid
