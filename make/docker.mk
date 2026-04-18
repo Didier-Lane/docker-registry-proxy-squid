@@ -7,9 +7,9 @@ DOCKER_BUILDKIT 		:= 1
 # https://docs.docker.com/build/building/variables/#buildkit_progress
 BUILDKIT_PROGRESS		?= auto
 
-# https://hub.docker.com/_/alpine
-ALPINE_VERSION			?= 3.23.4
-ALPINE_DIGEST			?= sha256:4d889c14e7d5a73929ab00be2ef8ff22437e7cbc545931e52554a7b00e123d8b
+# https://hub.docker.com/_/debian
+DEBIAN_VERSION			?= 13.4-slim
+DEBIAN_DIGEST			?= sha256:5fb70129351edec3723d13f427400ecae3f13b83750e23ad47c46721effcf2db
 
 # https://github.com/squid-cache/squid/releases
 SQUID_REPOSITORY		:= squid-cache/squid

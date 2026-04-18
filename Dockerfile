@@ -1,33 +1,34 @@
 # https://hub.docker.com/r/docker/dockerfile
 # syntax=docker/dockerfile:1.21
 
-ARG ALPINE_VERSION=3.23.3
-ARG ALPINE_DIGEST=sha256:59855d3dceb3ae53991193bd03301e082b2a7faa56a514b03527ae0ec2ce3a95
+ARG DEBIAN_VERSION=13.4-slim
+ARG DEBIAN_DIGEST=sha256:5fb70129351edec3723d13f427400ecae3f13b83750e23ad47c46721effcf2db
 
 #
 # base stage
 #
-FROM alpine:${ALPINE_VERSION}@${ALPINE_DIGEST} AS base
+FROM debian:${DEBIAN_VERSION}@${DEBIAN_DIGEST} AS base
 
-SHELL ["/bin/ash", "-Eeuo", "pipefail", "-c"]
+ENV DEBIAN_FRONTEND=noninteractive
+
+SHELL ["/bin/bash", "-Eeuo", "pipefail", "-c"]
 
 RUN <<EOR
 	# Upgrade packages
-	apk update
-	apk upgrade
+	apt-get update
+	apt-get upgrade -y
 	# Install run deps
-	apk add --no-cache \
+	apt-get install -y \
 		ca-certificates \
 		openssl \
-		libltdl \
-		libstdc++ \
-		libgcc \
+		libltdl7 \
+		libstdc++-13-dev \
+		libgcc-13-dev \
 		perl
-	rm -rf /var/cache/apk/*
 	# Create user squid
-	addgroup squid
-	adduser -S -D -h /var/cache/squid -G squid squid
-	adduser squid tty
+	groupadd squid
+	useradd --system --create-home --home-dir /var/cache/squid --gid squid squid
+	usermod --append --groups tty squid
 	mkdir -p /var/run/squid
 	chown squid:squid -R /var/run/squid
 EOR
@@ -55,14 +56,14 @@ WORKDIR /tmp
 
 # Install build dependencies
 RUN <<EOR
-	apk add --no-cache \
+	apt-get install -y \
 		curl \
-		openssl-dev \
-		build-base \
+		libssl-dev \
+		build-essential \
 		automake \
 		autoconf \
 		libtool \
-		libcap \
+		libcap-dev \
 		gnupg
 EOR
 
@@ -85,7 +86,7 @@ RUN <<EOR
 	echo "key=$key"
 	echo "keyring=$keyring"
 	echo "keyserver=$keyserver"
-	gpg --status-fd 1 --keyring "$keyring" --keyserver "$keyserver" --recv-keys "$key"
+	gpg --status-fd 1 --keyserver "$keyserver" --recv-keys "$key"
 	gpg --status-fd 1 --verify "$SQUID_SIGNATURE" "$SQUID_ARCHIVE"
 	# extract the squid sources tarball
 	tar xvf "$SQUID_ARCHIVE"
@@ -152,6 +153,8 @@ EOR
 #
 FROM base AS final
 
+RUN rm -rf /var/lib/{apt,dpkg,cache,log}/*
+
 COPY --from=build /usr/local/bin /usr/local/bin
 COPY --from=build /usr/local/sbin /usr/local/sbin
 COPY --from=build /etc/squid /etc/squid
@@ -171,4 +174,4 @@ ENTRYPOINT ["/entrypoint.sh"]
 HEALTHCHECK \
 	--interval=30s --timeout=5s --retries=3 \
 	--start-period=5s --start-interval=5s \
-	CMD /bin/ash -Eeuo pipefail -c "test -f /var/run/squid/squid.pid"
+	CMD /bin/bash -Eeuo pipefail -c "test -f /var/run/squid/squid.pid"
