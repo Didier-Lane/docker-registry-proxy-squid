@@ -1,13 +1,13 @@
 # https://hub.docker.com/r/docker/dockerfile
 # syntax=docker/dockerfile:1.21
 
-ARG ALPINE_VERSION=3.23.3
-ARG ALPINE_DIGEST=sha256:59855d3dceb3ae53991193bd03301e082b2a7faa56a514b03527ae0ec2ce3a95
+ARG DEBIAN_VERSION=13.4-slim
+ARG DEBIAN_DIGEST=sha256:5fb70129351edec3723d13f427400ecae3f13b83750e23ad47c46721effcf2db
 
 #
 # base stage
 #
-FROM alpine:${ALPINE_VERSION}@${ALPINE_DIGEST} AS base
+FROM debian:${DEBIAN_VERSION}@${DEBIAN_DIGEST} AS base
 
 SHELL ["/bin/ash", "-Eeuo", "pipefail", "-c"]
 
