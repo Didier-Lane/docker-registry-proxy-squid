@@ -8,14 +8,11 @@ GNUMAKEFLAGS = --no-print-directory
 .ONESHELL:
 
 # setting ZSH or BASH as the make recipes shell
-SHELL := $(or $(shell which zsh 2> /dev/null), $(shell which bash 2> /dev/null))
+SHELL := $(firstword $(foreach s,zsh bash,$(shell command -v $(s))))
 
 ifeq ($(SHELL),)
 $(error ZSH or BASH is required, but none were found)
 endif
-
-# includes working copy environment variables
--include .env
 
 # flags of invoked shell in make recipes
 .SHELLFLAGS = -Eeu -o pipefail
@@ -29,26 +26,23 @@ endif
 
 .SHELLFLAGS += -c
 
+# includes working copy environment variables
+-include .env
+
 # shares all environment variables accross makefiles
 .EXPORT_ALL_VARIABLES:
+
+# includes makefiles filtered out with dependencies makefiles
+INCLUDED_MAKEFILES		:= $(shell find ./make -type f -name '*.mk' -not -path '*/deps/*')
 
 # list of dependencies required by the project
 DEPENDENCIES			?= $(DEPS)
 
-# list of all makefiles
-ALL_MAKEFILES			:= $(shell find ./make -type f -name '*.mk')
-
-# list of dependencies folders
-DEPS_FOLDERS			:= $(shell find ./make -type d -name deps)
-
-# list of dependencies makefiles
-DEPS_MAKEFILES 			:= $(filter $(foreach path,$(DEPS_FOLDERS),$(path)%mk),$(ALL_MAKEFILES))
-
-# includes makefiles filtered out with dependencies makefiles
-INCLUDED_MAKEFILES		:= $(filter-out $(foreach path,$(DEPS_FOLDERS),$(path)%mk),$(ALL_MAKEFILES))
-
 # implements dependencies
 ifneq (,$(DEPENDENCIES))
+
+# list of dependencies makefiles
+DEPS_MAKEFILES 			:= $(shell find ./make -type f -name '*.mk' -path '*/deps/*')
 
 # appends the host dependency to the list if not present
 ifeq (,$(findstring host,$(DEPENDENCIES)))
@@ -56,7 +50,7 @@ override DEPENDENCIES 	+= host
 endif
 
 # appends the jq dependency to the list for github or dockerhub if not present
-ifneq (,$(or $(findstring dockerhub,$(DEPENDENCIES)),$(findstring github,$(DEPENDENCIES))))
+ifneq (,$(firstword $(filter dockerhub github,$(DEPENDENCIES))))
 ifeq (,$(findstring jq,$(DEPENDENCIES)))
 override DEPENDENCIES 	+= jq
 endif
