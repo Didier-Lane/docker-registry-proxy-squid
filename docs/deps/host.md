@@ -10,6 +10,9 @@ Because it is a [special dependency], you don't necessary have to enable it manu
 |:--                    |:--                                |:--
 | `BIN_DIR`             | The directory where dependencies binairies will be downloaded | `~/.local/bin`
 
+>[!IMPORTANT]
+>The `BIN_DIR` environment variable will be resolved to the absolute path.
+
 [dependency]: ../deps.md
 [special dependency]: ../deps.md#special-dependencies
 [make/deps/host.mk]: ../../make/deps/host.mk

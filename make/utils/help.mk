@@ -26,13 +26,16 @@ define help_line
 endef
 endif
 
+define get_help_targets
+grep -hEo '(^[^\: ]+:.*?# .*$$)' $(MAKEFILE_LIST)
+endef
+
 define get_help_lines
-grep -hEo '(^[^\: ]+:.*?# .*$$)' $(MAKEFILE_LIST) \
-	| sed -e 's/:.*# /|/g' -e 's/ /|/1'
+$(get_help_targets) | sed -e 's/:.*# /|/g' -e 's/ /|/1'
 endef
 
 define get_help_lines_vars
-grep -hEo '(^[^\: ]+:.*?# .*$$)' $(MAKEFILE_LIST) \
+$(get_help_targets) \
 	| { grep -Eo '\$$\([^\)]+\)' || true } \
 	| sort -u | sed -e 's/[\$$()]*//g' \
 	| tr '\n' ' ' | sed 's/ $$//'

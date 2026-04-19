@@ -33,6 +33,5 @@ $(call executable,$(5))
 endef
 
 define random_hash
-[ ! -z "$(1)" ] && length="$(1)" || length="24"
-tr -dc 'A-Za-z0-9!%&()*+,-.:;<=>?@_' </dev/urandom | head -c "$${length}"; echo
+head -c 24 /dev/urandom | base64
 endef

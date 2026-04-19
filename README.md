@@ -1,182 +1,62 @@
-# Docker Registry Proxy Squid
+# Makefile Base
 
-> A Cache Proxy to any Docker registries based on [Squid](https://www.squid-cache.org/)
+Provides the basic structure and utilities for operations abstracted by Make recipes
 
-## About
+Requires
 
-This project provides a cache reverse proxy to prevent pull rate limiting and speed up the kick-off a local Kubernetes cluster such as [Kind](https://kind.sigs.k8s.io/), [VIND](https://github.com/loft-sh/vind) or any other "In Docker" equivalents.
+- [GNU Make](https://www.gnu.org/software/make/)
 
-It relies on Squid [SslBump Peek and Splice](https://wiki.squid-cache.org/Features/SslPeekAndSplice) feature to cache docker images.
+Features
 
-It includes the [makefile-base](https://github.com/Didier-Lane/makefile-base) project as a Git Subtree in the [make/base](./make/base) directory.
+- Manages the automatic creation of an [`.env`](./docs/env.md) file for storing environment variables
+- Provides an [helper](./docs/help.md) to present the available commands to the user
+- Optionnal [dependencies](./docs/deps.md) such as checking for newer [Github](./docs/deps/github.md) projects releases or newer [DockerHub](./docs/deps/dockerhub.md) immutable tags.
 
-> [!TIP]
-> Operations are organized as abstract make recipes, just run `make` to see the list of available targets
+Documentation
 
-## Requirements
-- Docker
-- Docker Compose
-- OpenSSL for [generating a self-signed CA certificate](#generate-a-self-signed-ca-certificate)
-- Make
+- [Clean](./docs/clean.md)
+- [Dependencies](./docs/deps.md)
+    - [Host](./docs/deps/host.md)
+    - [JQ](./docs/deps/jq.md)
+    - [YQ](./docs/deps/yq.md)
+    - [DockerHub](./docs/deps/dockerhub.md)
+    - [Github](./docs/deps/github.md)
+- [Development](./docs/dev.md)
+- [Display](./docs/display.md)
+- [Environment](./docs/env.md)
+- [Help](./docs/help.md)
+- [Git Subtree](./docs/subtree.md)
 
-## Generate a self-signed CA certificate
-
-> [!NOTE]
->The bellow example demonstrates how to generate a self-signed ECDSA CA certificate with openssl
-
-<details>
-<summary>Generate a self-signed CA certificate</summary>
-
-Create the private key
-
-```shell
-openssl ecparam -genkey -name secp384r1 -out CA.key
-```
-
-Create the certificate configuration file
+## Directory structure
 
 ```shell
-cat <<-EOF > CA.cnf
-[ req ]
-default_bits       = 4096
-prompt             = no
-default_md         = SHA384
-distinguished_name = dn
-req_extensions     = v3_req
-[ dn ]
-countryName  = FR
-stateOrProvinceName = Paris
-localityName  = Paris
-organizationName  = Example
-organizationalUnitName = IT
-commonName = Example Certification Authority
-[ v3_req ]
-basicConstraints = critical,CA:TRUE
-keyUsage = critical, digitalSignature, cRLSign, keyCertSign
-subjectKeyIdentifier = hash
-EOF
+.
+├── make
+│   ├── clean.mk
+│   ├── deps
+│   └── utils
+└── Makefile
 ```
 
-Create the CA certificate signing request
-
-```shell
-openssl req -new -SHA384 -nodes -out CA.csr -key CA.key -config CA.cnf
-```
-
-Create the CA certificate
-
-```shell
-openssl x509 -req -SHA384 -days 3650 -in CA.csr -signkey CA.key -extfile CA.cnf -out CA.crt
-```
-
-Finally concat the CA key and cert for later use with squid
-
-```shell
-cat CA.key CA.crt > CA-key-and-cert.pem
-```
-</details>
-
-### Trust the self-signed CA certificate
-
-> [!IMPORTANT]
->You need to trust the self-signed CA certificate in order to be able to use the proxy
-
-<details>
-<summary>Debian / Ubuntu</summary>
-
-```shell
-sudo cp CA.crt /usr/local/share/ca-certificates
-sudo update-ca-certificates
-```
-
-</details>
-
-<details>
-<summary>Fedora / Arch</summary>
-
-```shell
-sudo trust anchor --store CA.crt
-sudo update-ca-trust
-```
-
-</details>
+- [Makefile](./Makefile) is the main file invoked by make, it controls the inclusion of files ending by `.mk` from the [make](./make) directory as sub makefiles.
+- [deps](./make/deps) directory stores the [dependencies](./docs/deps.md) makefiles.
+- [utils](./make/utils) directory holds the makefiles utilities such as an [helper](./docs/help.md), messages [display](./docs/display.md) management, and so on.
 
 ## Usage
 
-Run `make` to generate the `.env` file, you can override any of the below listed [environment variables](#environment-variables) by passing them to `make` when generating the `.env` file
+You can either clone this repository as a base of your project or use it as a [git subtree](./docs/subtree.md).
 
-For example, to set the path to the self-signed CA certificate and key in pem format
-
-```shell
-make TLS_CA_PEM=/path/to/CA-key-and-cert.pem
-```
-
-> [!TIP]
-> You can execute `make clean` to remove the `.env` file
-
-## Build image
-
-Run `make build` to build the Docker image
-
-> [!NOTE]
-> Build takes about 5 minutes to compile squid depending on your system compute capabilities
-
-## Configure Container Runtime
-
-<details>
-<summary>Docker</summary>
-
->Create the file `/etc/systemd/system/docker.service.d/http-proxy.conf` with the following content
+The basic usage is to invoke `make` which will display the [helper](./docs/help.md).
 
 ```shell
-mkdir -p /etc/systemd/system/docker.service.d
+$ make
+Usage
 
-cat <<EOF | sudo tee /etc/systemd/system/docker.service.d/http-proxy.conf
-[Service]
-Environment="HTTPS_PROXY=http://127.0.0.1:3128/"
-EOF
+# To run and execute a target
+make <target>
 
-sudo systemctl daemon-reload
-sudo systemctl restart docker.service
+Available Targets
+
+clean           ✨ Cleans the working copy
+help            💡 Shows this help menu
 ```
-
-</details>
-
-<details>
-<summary>Containerd</summary>
-
->Create the file `/etc/systemd/system/containerd.service.d/http-proxy.conf` with the following content
-
-```shell
-mkdir -p /etc/systemd/system/containerd.service.d
-
-cat <<EOF | sudo tee /etc/systemd/system/containerd.service.d/http-proxy.conf
-[Service]
-Environment="HTTPS_PROXY=http://127.0.0.1:3128/"
-EOF
-
-sudo systemctl daemon-reload
-sudo systemctl restart containerd.service
-```
-
-</details>
-
-## Run
-
-Run `make up` to start the Registry Proxy
-
-## Environment variables
-
-| Name                  |     Description               | Default value
-|:--                    |:--                            |:--
-| COMPOSE_PROJECT_NAME  | Name of the Docker Compose project | `registry-proxy`
-| BUILDKIT_PROGRESS     | Sets the type of the [BuildKit progress output](https://docs.docker.com/build/building/variables/#buildkit_progress) | `auto`
-| DEBIAN_VERSION        | Version of The [Debian Image](https://hub.docker.com/_/debian) to use for building | `13.4-slim`
-| DEBIAN_DIGEST        | Digest of The [Debian Image Tag](https://hub.docker.com/layers/library/debian/13.4-slim/images/sha256-5fb70129351edec3723d13f427400ecae3f13b83750e23ad47c46721effcf2db) to use for building | `sha256:5fb70129351edec3723d13f427400ecae3f13b83750e23ad47c46721effcf2db`
-| SQUID_VERSION         | [Squid Release version](https://github.com/squid-cache/squid/releases) used for building | `7_5`
-| SQUID_ARCHIVE_DIGEST         | Digest of the [Squid Release](https://github.com/squid-cache/squid/releases) archive | `sha256:f6058907db0150d2f5d228482b5a9e5678920cf368ae0ccbcecceb2ff4c35106`
-| SQUID_SIGNATURE_DIGEST         | Digest of the [Squid Release](https://github.com/squid-cache/squid/releases) archive signature | `sha256:2637a60ea4e30e7573641d7b07fe8551f063aed08c274287e8fddc23aeda0b28`
-| IMAGE_REPOSITORY      | Name of the Docker image built | `registry-proxy`
-| IMAGE_TAG             | Tag of the Docker image built, defaults to the `SQUID_VERSION` with a string substitution of `_` with `.` ( eg : `7_5` to `7.5` ) | `7.5`
-| TLS_CA_PEM   | Path to the self-signed CA cert and key in PEM format | null
-| RESTART_POLICY        | Defines the [restart policy](https://docs.docker.com/reference/compose-file/services/#restart) of the registry proxy container | `unless-stopped`
