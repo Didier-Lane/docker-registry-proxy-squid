@@ -1,9 +1,9 @@
 ifndef OS
-OS					::= $(shell uname -s | tr "[:upper:]" "[:lower:]")
+OS					!= uname -s | tr "[:upper:]" "[:lower:]"
 endif
 
 ifndef ARCH
-ARCH				::= $(shell uname -m)
+ARCH				!= uname -m
 endif
 
 ifeq (x86_64,$(ARCH))
