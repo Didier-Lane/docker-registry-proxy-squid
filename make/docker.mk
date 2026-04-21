@@ -23,7 +23,7 @@ IMAGE_REPOSITORY		?= $(COMPOSE_PROJECT_NAME)
 IMAGE_TAG				?= $(subst _,.,$(SQUID_VERSION))
 
 # Path where the TLS CA cert and key pem file is located
-TLS_CA_PEM				?= ~/.ssl/local.io/CA-key-and-crt.pem
+TLS_CA_PEM				?= ~/.ssl/DidierLane/CA-key-and-crt.pem
 
 # Docker container restart policy
 RESTART_POLICY			?= unless-stopped
@@ -41,5 +41,9 @@ up: # 🐋 Runs The Registry Proxy
 	docker compose up --detach
 
 .PHONY: down
-down: # 🐋 Stops The Registry Proxy
-	docker compose down
+down: # 🐋 Stops and removes The Registry Proxy
+	docker compose down $(ARGS)
+
+.PHONY: destroy
+destroy: # 🐋 Stops and removes The Registry Proxy and its volumes
+	$(MAKE) down ARGS=--volumes
