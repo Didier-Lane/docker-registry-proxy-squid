@@ -1,5 +1,5 @@
-define env_vars :=
-grep -hEo '^([A-Z\_]+)\s*(\?|!|::|:::)=' Makefile $(INCLUDED_MAKEFILES) | sed 's/\s*[?!:]*=.*//g' | sort -d
+define env_vars
+grep -hEo '^([A-Z\_]+)\s*(\?|!|::|:::)=' $(MAKEFILE_LIST) | sed 's/\s*[?!:]*=.*//g' | sort -d
 endef
 
 .env:
