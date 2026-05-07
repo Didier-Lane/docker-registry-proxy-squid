@@ -22,6 +22,10 @@ services:
       - ${TLS_CA_PEM}:/etc/squid/ssl/CA.pem:ro,z
     ports:
       - 3128:3128
+    dns:
+      - 1.1.1.1
+      - 1.0.0.1
+      - 8.8.8.8
     restart: ${RESTART_POLICY}
 
 volumes:
