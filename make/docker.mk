@@ -8,8 +8,8 @@ DOCKER_BUILDKIT 		:= 1
 BUILDKIT_PROGRESS		?= auto
 
 # https://hub.docker.com/_/debian
-DEBIAN_VERSION			?= 13.4-slim
-DEBIAN_DIGEST			?= sha256:5fb70129351edec3723d13f427400ecae3f13b83750e23ad47c46721effcf2db
+DEBIAN_VERSION			?= 13.5-slim
+DEBIAN_DIGEST			?= sha256:ed8750007edb5cb6c6e69d930d3fe3f1af60e759f05de5362be014d498d5f25f
 
 # https://github.com/squid-cache/squid/releases
 SQUID_REPOSITORY		:= squid-cache/squid

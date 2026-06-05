@@ -171,8 +171,8 @@ Run `make up` to start the Registry Proxy
 |:--                    |:--                            |:--
 | COMPOSE_PROJECT_NAME  | Name of the Docker Compose project | `registry-proxy`
 | BUILDKIT_PROGRESS     | Sets the type of the [BuildKit progress output](https://docs.docker.com/build/building/variables/#buildkit_progress) | `auto`
-| DEBIAN_VERSION        | Version of The [Debian Image](https://hub.docker.com/_/debian) to use for building | `13.4-slim`
-| DEBIAN_DIGEST        | Digest of The [Debian Image Tag](https://hub.docker.com/layers/library/debian/13.4-slim/images/sha256-5fb70129351edec3723d13f427400ecae3f13b83750e23ad47c46721effcf2db) to use for building | `sha256:5fb70129351edec3723d13f427400ecae3f13b83750e23ad47c46721effcf2db`
+| DEBIAN_VERSION        | Version of The [Debian Image](https://hub.docker.com/_/debian) to use for building | `13.5-slim`
+| DEBIAN_DIGEST        | Digest of The [Debian Image Tag](https://hub.docker.com/_/debian/tags) to use for building | `sha256:ed8750007edb5cb6c6e69d930d3fe3f1af60e759f05de5362be014d498d5f25f`
 | SQUID_VERSION         | [Squid Release version](https://github.com/squid-cache/squid/releases) used for building | `7_5`
 | SQUID_ARCHIVE_DIGEST         | Digest of the [Squid Release](https://github.com/squid-cache/squid/releases) archive | `sha256:f6058907db0150d2f5d228482b5a9e5678920cf368ae0ccbcecceb2ff4c35106`
 | SQUID_SIGNATURE_DIGEST         | Digest of the [Squid Release](https://github.com/squid-cache/squid/releases) archive signature | `sha256:2637a60ea4e30e7573641d7b07fe8551f063aed08c274287e8fddc23aeda0b28`
