@@ -171,12 +171,12 @@ Run `make up` to start the Registry Proxy
 |:--                    |:--                            |:--
 | COMPOSE_PROJECT_NAME  | Name of the Docker Compose project | `registry-proxy`
 | BUILDKIT_PROGRESS     | Sets the type of the [BuildKit progress output](https://docs.docker.com/build/building/variables/#buildkit_progress) | `auto`
-| DEBIAN_VERSION        | Version of The [Debian Image](https://hub.docker.com/_/debian) to use for building | `13.5-slim`
-| DEBIAN_DIGEST        | Digest of The [Debian Image Tag](https://hub.docker.com/_/debian/tags) to use for building | `sha256:ed8750007edb5cb6c6e69d930d3fe3f1af60e759f05de5362be014d498d5f25f`
-| SQUID_VERSION         | [Squid Release version](https://github.com/squid-cache/squid/releases) used for building | `7_5`
-| SQUID_ARCHIVE_DIGEST         | Digest of the [Squid Release](https://github.com/squid-cache/squid/releases) archive | `sha256:f6058907db0150d2f5d228482b5a9e5678920cf368ae0ccbcecceb2ff4c35106`
-| SQUID_SIGNATURE_DIGEST         | Digest of the [Squid Release](https://github.com/squid-cache/squid/releases) archive signature | `sha256:2637a60ea4e30e7573641d7b07fe8551f063aed08c274287e8fddc23aeda0b28`
+| DEBIAN_VERSION        | Version of The [Debian Image](https://hub.docker.com/_/debian) to use for building | `13.6-slim`
+| DEBIAN_DIGEST        | Digest of The [Debian Image Tag](https://hub.docker.com/_/debian/tags) to use for building | `sha256:9bb8a3626890e084ab54e888fdd7c4b6d2f119071cd4c5dc5fecb4d73062aa5f`
+| SQUID_VERSION         | [Squid Release version](https://github.com/squid-cache/squid/releases) used for building | `7_6`
+| SQUID_ARCHIVE_DIGEST         | Digest of the [Squid Release](https://github.com/squid-cache/squid/releases) archive | `sha256:852178fdc37c5b0786a934fc990c7d2fffc82acf19b2284be209b96431d25992`
+| SQUID_SIGNATURE_DIGEST         | Digest of the [Squid Release](https://github.com/squid-cache/squid/releases) archive signature | `sha256:3e3e929270eee0e45cbebe9d253353b991a25468de9b26126a2f6d70efd2193c`
 | IMAGE_REPOSITORY      | Name of the Docker image built | `registry-proxy`
-| IMAGE_TAG             | Tag of the Docker image built, defaults to the `SQUID_VERSION` with a string substitution of `_` with `.` ( eg : `7_5` to `7.5` ) | `7.5`
+| IMAGE_TAG             | Tag of the Docker image built, defaults to the `SQUID_VERSION` with a string substitution of `_` with `.` ( eg : `7_6` to `7.6` ) | `7.6`
 | TLS_CA_PEM   | Path to the self-signed CA cert and key in PEM format | null
 | RESTART_POLICY        | Defines the [restart policy](https://docs.docker.com/reference/compose-file/services/#restart) of the registry proxy container | `unless-stopped`
