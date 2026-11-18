@@ -1,5 +1,5 @@
 # https://hub.docker.com/r/docker/dockerfile
-# syntax=docker/dockerfile:1.21
+# syntax=docker/dockerfile:1.29
 
 ARG DEBIAN_VERSION=13.4-slim
 ARG DEBIAN_DIGEST=sha256:5fb70129351edec3723d13f427400ecae3f13b83750e23ad47c46721effcf2db
