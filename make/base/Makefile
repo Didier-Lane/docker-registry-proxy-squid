@@ -33,7 +33,7 @@ endif
 .EXPORT_ALL_VARIABLES:
 
 # includes makefiles filtered out with dependencies makefiles
-INCLUDED_MAKEFILES		:= $(shell find ./make -type f -name '*.mk' -not -path '*/deps/*')
+INCLUDED_MAKEFILES		:= $(shell find ./make -type f -name '*.mk' -not -path '*/deps/*' | sort)
 
 # list of dependencies required by the project
 DEPENDENCIES			?= $(DEPS)
